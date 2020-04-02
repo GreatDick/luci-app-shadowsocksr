@@ -46,6 +46,19 @@ function index()
 
 end
 
+local function is_running(name)
+	return luci.sys.call("pidof %s >/dev/null" %{name}) == 0
+end
+
+function action_status()
+	luci.http.prepare_content("application/json")
+	luci.http.write_json({
+		ssr_redir = is_running("ssr-redir"),
+		ssr_local = is_running("ssr-local"),
+		ssr_tunnel = is_running("ssr-tunnel")
+	})
+end
+
 function action_log()
 	local fs = require "nixio.fs"
 	local conffile = "/var/log/shadowsocksr_watchdog.log"
